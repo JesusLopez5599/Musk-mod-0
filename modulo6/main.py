@@ -1,23 +1,14 @@
 import os
 import pandas as pd
-from lector.py import LectorCSV, LectorJSON, LectorTXT
-from aeropuerto import Aeropuerto
-from slot import Slot
+from entities.aeropuerto import Aeropuerto
+from entities.lector import LectorTXT, LectorCSV, LectorJSON
+
 
 def preprocess_data(df_list):
-    #Combina los DateFrames en una sola lista de DateFrames
-    df_combined = pd.concat(df_list, ignore_index=True)
-    
-    required_colums=['id','tipo', 'fecha_llegada']
-    for col in required_columns:
-        if col not in df_combined.columns:
-            raise ValueError(f"Falta la columna requerida:{col}")
-    
-    # Convertit fecha_llegada a formato datetime si no está ya convertido
-    if not pd.api.types.is_datetime64_any_dtype(df_combined['fecha_llegada']):
-        df_combined['fecha_llegada']= pd.to_datetime(df_combined['fecha_llegada'])
-        
-    return df_combined
+    df_ = pd.concat(df_list)
+    df_['fecha_llegada'] = df_['fecha_llegada'].apply(lambda x: x.replace('T', ' '))
+    df_['fecha_llegada'] = pd.to_datetime(df_['fecha_llegada'])
+    return df_
 
 
 if __name__ == '__main__':
